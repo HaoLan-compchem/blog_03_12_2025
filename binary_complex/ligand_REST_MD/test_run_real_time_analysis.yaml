@@ -1,0 +1,15 @@
+- iteration: 200
+  percent_complete: 50.0
+  mbar_analysis:
+    free_energy_in_kT: -128.80295346069323
+    standard_error_in_kT: 0.09712304867099864
+    number_of_uncorrelated_samples: 164.3602752685547
+    n_equilibrium_iterations: 7
+    statistical_inefficiency: 1.186418056488037
+  timing_data:
+    iteration_seconds: 230.76441502571106
+    average_seconds_per_iteration: 226.42374146523787
+    estimated_time_remaining: '12:38:31.172035'
+    estimated_localtime_finish_date: 2025-Sep-14-22:37:49
+    estimated_total_time: 1 day, 1:09:29.496586
+    ns_per_day: 610.536682705703
