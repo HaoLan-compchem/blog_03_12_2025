@@ -1,0 +1,42 @@
+integrator              = md     
+nsteps                  = 500000  
+dt                      = 0.002    
+;
+nstenergy               = 5000
+nstlog                  = 5000
+nstxout-compressed      = 5000 
+; 
+continuation            = no
+constraint_algorithm    = lincs
+constraints             = h-bonds
+lincs_iter              = 1
+lincs_order             = 4
+; 
+cutoff-scheme           = Verlet
+ns_type                 = grid
+nstlist                 = 20
+rlist                   = 1.0
+vdwtype                 = cutoff
+vdw-modifier            = force-switch
+rvdw-switch             = 0.9
+rvdw                    = 1.0
+;
+coulombtype             = PME
+rcoulomb                = 1.0
+pme_order               = 4
+fourierspacing          = 0.16
+;
+tcoupl                  = V-rescale
+tc-grps                 = UNK Water
+tau_t                   = 0.1   0.1
+ref_t = 378 378
+; 
+pcoupl                  = no
+;
+pbc                     = xyz
+;
+DispCorr                = EnerPres 
+;
+gen_vel                 = yes
+gen_temp                = 300
+gen_seed                = 1
