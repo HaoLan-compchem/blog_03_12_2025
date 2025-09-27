@@ -34,6 +34,7 @@ print(f"\nUsing device: {device}")
 with open('gaff_system.xml', 'r') as f:
     system = mm.XmlSerializer.deserialize(f.read())
 pdb = PDBFile('gaff_ligand_in_solvent.pdb')
+system.addForce(mm.MonteCarloBarostat(1*unit.atmosphere, 300*unit.kelvin))
 #
 chains = list(pdb.topology.chains())
 print(chains)
@@ -44,7 +45,41 @@ print(atomic_numbers)
 
 #-----------------------------------------------------------------------------------------------------------------#
 
-from workshop_utils import removeBonds
+def removeBonds(system, atoms, removeInSet=True, removeConstraints=True):
+
+    atomSet = set(atoms)
+    import xml.etree.ElementTree as ET
+    xml = mm.XmlSerializer.serialize(system)
+    root = ET.fromstring(xml)
+
+    def shouldRemove(termAtoms):
+        return all(a in atomSet for a in termAtoms) == removeInSet
+
+    for bonds in root.findall("./Forces/Force/Bonds"):
+        for bond in bonds.findall("Bond"):
+            bondAtoms = [int(bond.attrib[p]) for p in ("p1", "p2")]
+            if shouldRemove(bondAtoms):
+                bonds.remove(bond)
+    for angles in root.findall("./Forces/Force/Angles"):
+        for angle in angles.findall("Angle"):
+            angleAtoms = [int(angle.attrib[p]) for p in ("p1", "p2", "p3")]
+            if shouldRemove(angleAtoms):
+                angles.remove(angle)
+    for torsions in root.findall("./Forces/Force/Torsions"):
+        for torsion in torsions.findall("Torsion"):
+            torsionAtoms = [int(torsion.attrib[p]) for p in ("p1", "p2", "p3", "p4")]
+            if shouldRemove(torsionAtoms):
+                torsions.remove(torsion)
+
+    if removeConstraints:
+        for constraints in root.findall("./Constraints"):
+            for constraint in constraints.findall("Constraint"):
+                constraintAtoms = [int(constraint.attrib[p]) for p in ("p1", "p2")]
+                if shouldRemove(constraintAtoms):
+                    constraints.remove(constraint)
+
+    return mm.XmlSerializer.deserialize(ET.tostring(root, encoding="unicode"))
+
 
 def removeMMInteraction(system, ml_atoms):
     newSystem = removeBonds(system, ml_atoms)
@@ -65,6 +100,7 @@ def removeMMInteraction(system, ml_atoms):
 
 mixed_system = removeMMInteraction(system, ml_atoms)
 print("number of forces (before nnp)  = ", mixed_system.getNumForces())
+print(mixed_system.getForces())
 
 #-----------------------------------------------------------------------------------------------------------------#
 
@@ -91,6 +127,7 @@ torchforce = TorchForce(torch_module)
 mixed_system.addForce(torchforce)
 
 print("number of forces (after nnp) = ", mixed_system.getNumForces())
+print(mixed_system.getForces())
 
 #-------------------------------------------------------------------------------------------------#
 
@@ -117,6 +154,17 @@ print(openmm_force)
 #
 simulation.reporters.append(app.DCDReporter('test_ani_mixed.dcd', 100))
 simulation.context.setVelocitiesToTemperature(temperature)
-reporter = app.StateDataReporter(file=sys.stdout, reportInterval=100, step=True, time=True, potentialEnergy=True, temperature=True, speed=True)
+reporter = app.StateDataReporter(
+    'data.csv', 
+    100, 
+    step=True, 
+    time=True, 
+    potentialEnergy=True,
+    kineticEnergy=True,
+    totalEnergy=True,  
+    temperature=True,
+    volume=True,
+    density=True, 
+    speed=True)
 simulation.reporters.append(reporter)
-simulation.step(10000)
+simulation.step(200000)
