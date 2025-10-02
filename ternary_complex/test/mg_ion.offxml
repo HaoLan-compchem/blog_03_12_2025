@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<SMIRNOFF version="0.3" aromaticity_model="OEAroModel_MDL">
-  
-  <LibraryCharges version="0.3">
-    <LibraryCharge name="Mg+2" smirks="[#12+2:1]" charge1="2.0*elementary_charge"/>
-  </LibraryCharges>
-
-</SMIRNOFF>
