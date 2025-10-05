@@ -1,4 +1,4 @@
-filename,energy,HOMO_LUMO_gap,method
+filename,XTB_opt_Energy,HOMO_LUMO_gap,sampling method in explicit TIP3P
 REST600d_0162_opt.json,-221.33878968,2.58341902,SAGE (REST_600K)
 REST600d_0157_opt.json,-221.33865018,2.62594016,SAGE (REST_600K)
 REST600d_0166_opt.json,-221.33850934,2.63199471,SAGE (REST_600K)
