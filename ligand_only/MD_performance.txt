@@ -1,0 +1,6 @@
+classic gaff NPT at 300K, 10 ns, 2fs/step, H-bond constrained, no enhanced, 465 ns/day - openmm
+classic sage NPT at 300K, 10 ns, 2fs/step, H-bond constrained, no enhanced, 460 ns/day - openmm
+classic ANI2x NPT at 300K, 200 ps, 0.5fs/step, unconstrained, no enhanced, 1.3 ns/day - openmm
+classic MACEsmall NPT at 300K, 100 ps, 0.5fs/step, unconstrained, no enhanced, 0.72 ns/day -openmm
+sage REMD NPT (16 replicates up to 475 K), 10 ns, 2fs/step, H-bond constrained, 10000 exchange attempts, 35 ns/day/replica - gromacs
+sage REST NPT (16 replicates up to 600 K), 10 ns, 2fs/step, H-bond constrained, 10000 exchange attempts, 21 ns/day/replica -openmm
