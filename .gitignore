@@ -1,3 +1,9 @@
 *.xtc
 *.dcd
 *.nc
+*.pdb
+*.densities
+*.gbw
+*.molden
+*.model
+*.pt
