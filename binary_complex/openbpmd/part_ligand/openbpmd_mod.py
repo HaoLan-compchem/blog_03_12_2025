@@ -484,7 +484,7 @@ def produce(out_dir, idx, lig_resname, eq_pdb, parm, parm_file,
                                 totalSteps=steps, separator=','))  # every 1 ns
 
     colvar_array = np.array([meta.getCollectiveVariables(simulation)])
-    pmf_array = np.array([meta.getFreeEnergy()])
+    #
     for i in range(0, int(steps), 500):
         if i % 25000 == 0:
             # log the stored COLVAR every 100ps
@@ -494,6 +494,7 @@ def produce(out_dir, idx, lig_resname, eq_pdb, parm, parm_file,
         # record the CVs every 2 ps
         colvar_array = np.append(colvar_array, [current_cvs], axis=0)
     np.save(os.path.join(write_dir,'COLVAR.npy'), colvar_array)
+    pmf_array = np.array([meta.getFreeEnergy()])
     np.save(os.path.join(write_dir,'bias_{}.npy'.format(idx)), pmf_array)
     # center everything using MDTraj, to fix any PBC imaging issues
     # mdtraj can't use GMX TOP, so we have to specify the GRO file instead

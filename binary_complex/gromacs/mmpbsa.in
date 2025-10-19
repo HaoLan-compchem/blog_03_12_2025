@@ -1,0 +1,8 @@
+&general
+startframe=1,
+endframe=10010,
+interval=10
+/
+&gb
+igb=2
+/
