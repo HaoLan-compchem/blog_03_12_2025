@@ -1,4 +1,4 @@
-! SP DFT wB97X-D3BJ def2-TZVP RIJCOSX
+! SP DFT wB97X-D3BJ def2-TZVP RIJCOSX LooseSCF
 ! D3BJ
 ! CPCM(water)
 %maxcore 4000
