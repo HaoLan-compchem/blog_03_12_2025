@@ -109,9 +109,9 @@ def main(args):
         else:
             mdtraj_top = args.parameters
         mdu = md.load(eq_pdb, top=mdtraj_top)
-        mdu.image_molecules()
+        mdu.image_molecules(inplace=True)
         mdu.save_pdb(cent_eq_pdb)
-
+    
     # Run NREPS number of production simulations
     for idx in range(0, args.nreps):
         rep_dir = os.path.join(args.output,f'rep_{idx}')
@@ -120,8 +120,8 @@ def main(args):
 
         if os.path.isfile(os.path.join(rep_dir,'bpm_results.csv')):
             continue
-        
-        produce(args.output, idx, args.lig_resname, eq_pdb, parm, args.parameters,
+        #mod change eq_pdb to cent_eq_pdb
+        produce(args.output, idx, args.lig_resname, cent_eq_pdb, parm, args.parameters,
                 args.structure, args.hill_height)
                 
         trj_name = os.path.join(rep_dir,'trj.dcd')
@@ -145,7 +145,7 @@ def main(args):
         df.to_csv(os.path.join(rep_dir,'bpm_results.csv'), index=False)
                 
     collect_results(args.output, args.output)
-
+    
     return None
     
 
@@ -349,15 +349,16 @@ def equilibrate(min_pdb, parm, out_dir, eq_file_name):
                      platform, properties)
     sim.context.setPositions(input_positions)
     integrator.step(250000)  # run 500 ps of equilibration
+    #mod Setting enforcePeriodicBox=False to write the unwrapped coordinates to the trajectory file
     all_positions = sim.context.getState(
-        getPositions=True, enforcePeriodicBox=True).getPositions()
+        getPositions=True, enforcePeriodicBox=False).getPositions()
     # we don't want to write the dummy atoms, so we only
     # write the positions of atoms up to the first dummy atom index
-    relevant_positions = all_positions[:dummyIndex[0]]
+    relevant_positions = all_positions[:dummyIndex[0]]   
     out_file = os.path.join(out_dir,eq_file_name)
     PDBFile.writeFile(sim.topology, relevant_positions,
                       open(out_file, 'w'))
-
+    
     return None
 
 
@@ -484,7 +485,6 @@ def produce(out_dir, idx, lig_resname, eq_pdb, parm, parm_file,
                                 totalSteps=steps, separator=','))  # every 1 ns
 
     colvar_array = np.array([meta.getCollectiveVariables(simulation)])
-    #
     for i in range(0, int(steps), 500):
         if i % 25000 == 0:
             # log the stored COLVAR every 100ps
@@ -494,8 +494,7 @@ def produce(out_dir, idx, lig_resname, eq_pdb, parm, parm_file,
         # record the CVs every 2 ps
         colvar_array = np.append(colvar_array, [current_cvs], axis=0)
     np.save(os.path.join(write_dir,'COLVAR.npy'), colvar_array)
-    pmf_array = np.array([meta.getFreeEnergy()])
-    np.save(os.path.join(write_dir,'bias_{}.npy'.format(idx)), pmf_array)
+
     # center everything using MDTraj, to fix any PBC imaging issues
     # mdtraj can't use GMX TOP, so we have to specify the GRO file instead
     if coords_file.endswith('.gro'):
